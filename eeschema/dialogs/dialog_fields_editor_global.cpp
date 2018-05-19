@@ -177,6 +177,10 @@ public:
             return GetValue( m_rows[ aRow ], aCol );
     }
 
+    std::vector<SCH_REFERENCE> GetRowReferences( int aRow )
+    {
+        return m_rows[ aRow ].m_Refs;
+    }
 
     wxString GetValue( DATA_MODEL_ROW& group, int aCol )
     {
@@ -820,7 +824,15 @@ void DIALOG_FIELDS_EDITOR_GLOBAL::OnRegroupComponents( wxCommandEvent& event )
 void DIALOG_FIELDS_EDITOR_GLOBAL::OnTableCellClick( wxGridEvent& event )
 {
     if( event.GetCol() == REFERENCE )
+    {
         m_dataModel->ExpandCollapseRow( event.GetRow());
+        std::vector<SCH_REFERENCE> refs = m_dataModel->GetRowReferences( event.GetRow() );
+        if (refs.size() == 1)
+        {
+            m_parent->FindComponentAndItem( refs[0].GetRef() + refs[0].GetRefNumber(),
+                                            true, FIND_COMPONENT_ONLY, wxEmptyString, false );
+        }
+    }
     else
         event.Skip();
 }
